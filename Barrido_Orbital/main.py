@@ -6,10 +6,13 @@ from settings import (
     MAIN_FONT_SIZE, SMALL_FONT_SIZE, TINY_FONT_SIZE,FONT_PATH)
 from entities.module import StationModule
 from entities.particle import Particle
+from systems import starfield
 from systems.detector import DetectorSystem
 from systems.orbit_manager import OrbitManager
 from systems.tutorial import TutorialScreen
 from systems.sound_manager import SoundManager
+from systems.starfield import Starfield
+
 
 def reset_game(sound_manager):
     """Inicializa o reinicia todas las variables de estado de la partida."""
@@ -44,6 +47,7 @@ def main():
     # ==========================================
     # 2. VARIABLES DE SALIDA / ESTADO DEL JUEGO
     # ==========================================
+    starfield = Starfield()
     running = True
     sound_manager = SoundManager()
     tutorial = TutorialScreen(sound_manager)
@@ -78,6 +82,8 @@ def main():
         # ==========================================
         if not tutorial.active:
             orbit_manager.update(dt, current_dose)
+            starfield.update(dt, orbit_manager.in_saa)
+
 
             # Alarma sonora una vez al entrar a la Anomalía del Atlántico Sur
             if orbit_manager.in_saa and not sound_manager.saa_alarm_played:
@@ -115,6 +121,7 @@ def main():
         # 4. SALIDA VISUAL (Renderizado)
         # ==========================================
         screen.fill(orbit_manager.current_bg_color)
+        starfield.draw(screen)
 
         for mod in modules:
             mod.draw(screen, small_font)
